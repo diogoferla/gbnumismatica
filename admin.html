@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Administrativo — GB Numismática & Coleções</title>
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <header class="admin-header">
+    <div class="brand"><span class="brand-mark">GB</span><div><strong>GB Numismática & Coleções</strong><small>Painel administrativo</small></div></div>
+    <a class="back-link" href="index.html">← Voltar para a loja</a>
+  </header>
+
+  <main class="admin-main">
+    <section class="welcome">
+      <div>
+        <p class="eyebrow">ADMINISTRAÇÃO</p>
+        <h1>Olá! 👋</h1>
+        <p>Gerencie os produtos da loja de forma simples.</p>
+      </div>
+      <button class="primary big" id="newProductBtn">＋ Novo produto</button>
+    </section>
+
+    <div class="notice"><strong>Primeira versão:</strong> esta tela é a estrutura do painel. As alterações feitas aqui ainda não publicam mudanças na loja. Vamos conectar isso ao banco de dados na próxima etapa.</div>
+
+    <section class="stats">
+      <div class="stat"><span>Produtos</span><strong id="statProducts">0</strong></div>
+      <div class="stat"><span>Disponíveis</span><strong id="statAvailable">0</strong></div>
+      <div class="stat"><span>Indisponíveis</span><strong id="statUnavailable">0</strong></div>
+      <div class="stat"><span>Categorias</span><strong id="statCategories">9</strong></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-title"><div><h2>Meus produtos</h2><p>Pesquise, edite ou desative um produto.</p></div></div>
+      <div class="filters">
+        <label class="search"><span>🔎</span><input id="searchInput" type="search" placeholder="Pesquisar produto..."></label>
+        <select id="categoryFilter"><option value="">Todas as categorias</option></select>
+        <select id="statusFilter"><option value="">Todos os status</option><option value="available">Disponível</option><option value="unavailable">Não disponível</option></select>
+      </div>
+      <div id="productList" class="product-list"></div>
+    </section>
+
+    <section class="panel categories-panel">
+      <div class="panel-title"><div><h2>Categorias</h2><p>As categorias podem ser ativadas ou desativadas no futuro.</p></div></div>
+      <div id="categoryList" class="category-list"></div>
+    </section>
+  </main>
+
+  <div class="modal-backdrop" id="modalBackdrop" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal-close" id="closeModal" aria-label="Fechar">×</button>
+      <p class="eyebrow">PRODUTO</p>
+      <h2 id="modalTitle">Novo produto</h2>
+      <form id="productForm">
+        <input type="hidden" id="productId">
+        <div class="form-grid">
+          <label>Nome do produto<input id="name" required></label>
+          <label>Preço<input id="price" inputmode="decimal" placeholder="0,00" required></label>
+          <label>Ano<input id="year" placeholder="Ex.: 2025"></label>
+          <label>Categoria<select id="category" required></select></label>
+          <label class="full">Imagem principal<input id="image" placeholder="ex.: imagens/produto-01/foto-1.png"></label>
+          <label class="full">Descrição<textarea id="description" rows="4" placeholder="Descrição do produto"></textarea></label>
+        </div>
+        <label class="switch-row"><input type="checkbox" id="available" checked><span>Produto disponível para venda</span></label>
+        <div class="modal-actions"><button type="button" class="secondary" id="cancelBtn">Cancelar</button><button type="submit" class="primary">Salvar produto</button></div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>
