@@ -1,6 +1,7 @@
 const produtos = [
   {
     "id": "01",
+    "categoria": "blisters",
     "nome": "Blister Oficial — Set das Moedas da Segunda Família do Real",
     "ano": "2018",
     "preco": "170.00",
@@ -10,6 +11,7 @@ const produtos = [
   },
   {
     "id": "02",
+    "categoria": "moedas",
     "nome": "Moeda Comemorativa 60 Anos do Banco Central do Brasil — Edição Especial",
     "ano": "2025",
     "preco": "160.00",
@@ -21,6 +23,7 @@ const produtos = [
   },
   {
     "id": "03",
+    "categoria": "moedas",
     "nome": "Moeda Comemorativa 1 Real — 60 Anos do Banco Central do Brasil — Edição Especial",
     "ano": "2025",
     "preco": "19.00",
@@ -33,6 +36,7 @@ const produtos = [
   },
   {
     "id": "04",
+    "categoria": "moedas",
     "nome": "Moeda Comemorativa 1 Real — 30 Anos do Plano Real — Edição Especial",
     "ano": "2024",
     "preco": "20.00",
@@ -43,6 +47,7 @@ const produtos = [
   },
   {
     "id": "05",
+    "categoria": "moedas",
     "nome": "Moeda Comemorativa 60 Anos BACEN — Flor de Cunho",
     "ano": "2025",
     "preco": "19.00",
@@ -52,6 +57,7 @@ const produtos = [
   },
   {
     "id": "06",
+    "categoria": "moedas",
     "nome": "Moeda Comemorativa 30 Anos do Real — Flor de Cunho",
     "ano": "2024",
     "preco": "25.00",
@@ -61,6 +67,7 @@ const produtos = [
   },
   {
     "id": "07",
+    "categoria": "blisters",
     "nome": "Blister Oficial — Moeda Comemorativa 30 Anos do Real",
     "ano": "2024",
     "preco": "160.00",
@@ -71,6 +78,7 @@ const produtos = [
   },
   {
     "id": "08",
+    "categoria": "blisters",
     "nome": "Sachê Lacrado de 25 Centavos — Data Escassa / Baixíssima Tiragem",
     "ano": "2016",
     "preco": "263.00",
@@ -80,6 +88,7 @@ const produtos = [
   },
   {
     "id": "09",
+    "categoria": "moedas",
     "nome": "Moeda Avulsa de 1 Real — Comemorativa dos 50 Anos do Banco Central",
     "ano": "2015",
     "preco": "35.00",
@@ -90,6 +99,7 @@ const produtos = [
   },
   {
     "id": "10",
+    "categoria": "blisters",
     "nome": "Olimpíadas Rio 2016 — Blister Comemorativo da Moeda Entrega da Bandeira Olímpica — Produto Original",
     "ano": "2012",
     "preco": "400.00",
@@ -100,6 +110,7 @@ const produtos = [
   },
   {
     "id": "11",
+    "categoria": "moedas",
     "nome": "Casal FAO — Moedas de 10 e 25 Centavos — Flor de Cunho",
     "ano": "1995",
     "preco": "410.00",
@@ -110,6 +121,7 @@ const produtos = [
   },
   {
     "id": "12",
+    "categoria": "moedas",
     "nome": "Moeda Comemorativa Olimpíadas Rio 2016 — Entrega da Bandeira",
     "ano": "2012",
     "preco": "320.00",
@@ -119,6 +131,7 @@ const produtos = [
   },
   {
     "id": "13",
+    "categoria": "moedas",
     "nome": "Moeda Comemorativa 2 Reais — Bicentenário da Independência — Original",
     "ano": "2022",
     "preco": "210.00",
@@ -131,6 +144,7 @@ const produtos = [
   },
   {
     "id": "14",
+    "categoria": "moedas",
     "nome": "Moeda 1 Real — 2019 — Comemorativa do Beija-Flor — Flor de Cunho",
     "ano": "2019",
     "preco": "21.00",
@@ -141,6 +155,7 @@ const produtos = [
   },
   {
     "id": "15",
+    "categoria": "colecoes",
     "nome": "Coleção com 16 Moedas das Olimpíadas — Flor de Cunho",
     "ano": "",
     "preco": "160.00",
@@ -150,6 +165,7 @@ const produtos = [
   },
   {
     "id": "16",
+    "categoria": "colecoes",
     "nome": "Kit com 16 Moedas Olímpicas Comemorativas — Novas — Flor de Cunho",
     "ano": "",
     "preco": "134.20",
@@ -162,6 +178,7 @@ const produtos = [
   },
   {
     "id": "17",
+    "categoria": "moedas",
     "nome": "Moeda Avulsa de 1 Real 2016 — Boxe — Nova — Flor de Cunho",
     "ano": "2016",
     "preco": "15.80",
@@ -172,6 +189,7 @@ const produtos = [
   },
   {
     "id": "18",
+    "categoria": "colecoes",
     "nome": "Coleção Olímpica com as 17 Moedas — Novas — Flor de Cunho",
     "ano": "",
     "preco": "500.00",
@@ -181,6 +199,7 @@ const produtos = [
   },
   {
     "id": "19",
+    "categoria": "blisters",
     "nome": "Sachê de Moedas de 1 Real Comemorativas — 50 Anos do Banco do Brasil",
     "ano": "",
     "preco": "658.20",
@@ -191,6 +210,7 @@ const produtos = [
   },
   {
     "id": "20",
+    "categoria": "blisters",
     "nome": "Sachê Lacrado de Moedas Comemorativas Beija-Flor — 50 Moedas — FC",
     "ano": "2019",
     "preco": "",
@@ -201,6 +221,7 @@ const produtos = [
   },
   {
     "id": "21",
+    "categoria": "moedas",
     "nome": "Moeda Soberba de 1 Real 2012 — Comemorativa da Bandeira",
     "ano": "2012",
     "preco": "320.00",
@@ -211,6 +232,7 @@ const produtos = [
   },
   {
     "id": "22",
+    "categoria": "blisters",
     "nome": "Blister Oficial — Moeda Comemorativa 25 Anos do Plano Real — Beija-Flor",
     "ano": "2019",
     "preco": "165.00",

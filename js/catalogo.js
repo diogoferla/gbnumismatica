@@ -18,7 +18,16 @@
     const grid = document.getElementById('grid');
     if (!grid || typeof produtos === 'undefined') return;
 
-    grid.innerHTML = produtos.map(function (p) {
+    const params = new URLSearchParams(window.location.search);
+    const categoria = params.get('categoria');
+    const lista = categoria ? produtos.filter(function (p) { return p.categoria === categoria; }) : produtos;
+    const titulo = document.getElementById('catalog-title');
+    const desc = document.getElementById('catalog-description');
+    const nomes = { moedas:'Moedas', cedulas:'Cédulas', medalhas:'Medalhas', blisters:'Blisters e Sachês', colecoes:'Coleções e Kits', acessorios:'Acessórios para Colecionadores', catalogos:'Livros e Catálogos', especiais:'Peças Especiais', outros:'Outros Colecionáveis' };
+    if (titulo && categoria && nomes[categoria]) titulo.textContent = nomes[categoria];
+    if (desc && categoria && nomes[categoria]) desc.textContent = 'Produtos da categoria ' + nomes[categoria] + '.';
+
+    grid.innerHTML = lista.map(function (p) {
       const addButton = p.preco
         ? `<button class="add-cart" onclick="addToCart('${p.id}')">🛒 Adicionar</button>`
         : '';
