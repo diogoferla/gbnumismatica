@@ -3,17 +3,26 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>Produto — GB Numismática</title>
+
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
+
   <div class="top">📖 História em suas mãos</div>
 
   <header class="site-header">
     <a class="logo" href="index.html">GB</a>
 
     <div class="search-wrap">
-      <input class="search" type="search" placeholder="Pesquisar moedas, cédulas e coleções..." aria-label="Pesquisar produtos">
+      <input
+        class="search"
+        type="search"
+        placeholder="Pesquisar moedas, cédulas e coleções..."
+        aria-label="Pesquisar produtos"
+      >
       <span class="search-icon">🔎</span>
     </div>
 
@@ -38,231 +47,469 @@
   </nav>
 
   <main class="container">
-    <a class="back" href="moedas.html">← Voltar para moedas e coleções</a>
+
+    <a class="back" href="moedas.html">
+      ← Voltar para moedas e coleções
+    </a>
+
     <div id="product-detail">
       <div class="catalog-loading">Carregando produto...</div>
     </div>
+
   </main>
 
   <footer class="footer">
     <div class="footer-inner">
+
       <div>
         <h3>GB Numismática & Coleções</h3>
         <p>História em suas mãos.</p>
         <p>Peças selecionadas para colecionadores e apaixonados por numismática.</p>
       </div>
+
       <div>
         <h3>Atendimento</h3>
         <p>Entre em contato para dúvidas sobre produtos, pedidos e envio.</p>
       </div>
+
       <div>
         <h3>Compra</h3>
         <p>Adicione seus produtos ao carrinho e confira seu pedido antes de finalizar.</p>
       </div>
+
     </div>
-    <div class="footer-bottom">© 2026 GB Numismática & Coleções. Todos os direitos reservados.</div>
+
+    <div class="footer-bottom">
+      © 2026 GB Numismática & Coleções. Todos os direitos reservados.
+    </div>
   </footer>
 
   <div id="toast" class="toast"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-config.js?v=2"></script>
-  <script src="js/produtos.js"></script>
-  <script src="js/carrinho.js"></script>
-  <script src="js/busca.js"></script>
 
   <script>
-    (function () {
-      function esc(value) {
-        return String(value == null ? '' : value)
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;')
-          .replace(/'/g, '&#39;');
-      }
+    const SUPABASE_URL =
+      'https://cusfspxoudxvwrzjbeix.supabase.co';
 
-      function money(value) {
-        return Number(value).toLocaleString('pt-BR', {
+    const SUPABASE_KEY =
+      'sb_publishable_C3IkyRoHxetk1s28IbdxCg_Ic7-Veu4';
+
+    const db = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY,
+      {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+          detectSessionInUrl: false
+        }
+      }
+    );
+
+    const CART_KEY = 'gb_numismatica_carrinho';
+
+    function escapar(texto) {
+      return String(texto || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function dinheiro(valor) {
+      return Number(valor).toLocaleString(
+        'pt-BR',
+        {
           style: 'currency',
           currency: 'BRL'
-        });
+        }
+      );
+    }
+
+    function getCart() {
+      try {
+        return JSON.parse(
+          localStorage.getItem(CART_KEY)
+        ) || [];
+      } catch {
+        return [];
       }
+    }
 
-      window.setPhoto = function (button, src) {
-        var main = document.getElementById('main');
-        if (main) main.src = src;
+    function saveCart(cart) {
+      localStorage.setItem(
+        CART_KEY,
+        JSON.stringify(cart)
+      );
 
-        document.querySelectorAll('.thumbs button').forEach(function (item) {
-          item.classList.remove('active');
-        });
+      atualizarContadorCarrinho();
+    }
 
-        if (button) button.classList.add('active');
-      };
-
-      async function garantirConfiguracao() {
-        if (window.GB_SUPABASE_URL && window.GB_SUPABASE_PUBLISHABLE_KEY) return;
-
-        // Fallback: busca o mesmo arquivo de configuração usado pela loja, com cache-busting.
-        var resposta = await fetch('js/supabase-config.js?v=' + Date.now(), { cache: 'no-store' });
-        if (!resposta.ok) throw new Error('Não foi possível abrir js/supabase-config.js.');
-        var codigo = await resposta.text();
-        (0, eval)(codigo);
-
-        if (!window.GB_SUPABASE_URL || !window.GB_SUPABASE_PUBLISHABLE_KEY) {
-          throw new Error('A configuração do Supabase não foi carregada.');
-        }
-      }
-
-      async function obterProduto(id) {
-        await garantirConfiguracao();
-
-        if (window.gbStore && typeof window.gbStore.obterProduto === 'function') {
-          return await window.gbStore.obterProduto(id);
-        }
-
-        if (!window.supabase || !window.supabase.createClient) {
-          throw new Error('A biblioteca do Supabase não foi carregada.');
-        }
-
-        var client = window.gbPublicSupabase || window.supabase.createClient(
-          window.GB_SUPABASE_URL,
-          window.GB_SUPABASE_PUBLISHABLE_KEY,
-          {
-            auth: {
-              persistSession: false,
-              autoRefreshToken: false,
-              detectSessionInUrl: false
-            }
-          }
+    function atualizarContadorCarrinho() {
+      const total = getCart()
+        .reduce(
+          (soma, item) =>
+            soma + Number(item.qtd || 0),
+          0
         );
 
-        window.gbPublicSupabase = client;
+      document
+        .querySelectorAll('.cart-count')
+        .forEach(el => {
+          el.textContent = total;
+        });
+    }
 
-        var produtoRes = await client
+    function mostrarToast(mensagem) {
+      const toast =
+        document.getElementById('toast');
+
+      if (!toast) return;
+
+      toast.textContent = mensagem;
+      toast.classList.add('show');
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2200);
+    }
+
+    window.trocarFoto = function (
+      botao,
+      url
+    ) {
+      const principal =
+        document.getElementById(
+          'foto-principal'
+        );
+
+      if (principal) {
+        principal.src = url;
+      }
+
+      document
+        .querySelectorAll('.thumbs button')
+        .forEach(btn => {
+          btn.classList.remove('active');
+        });
+
+      if (botao) {
+        botao.classList.add('active');
+      }
+    };
+
+    window.adicionarProdutoAoCarrinho =
+      function (
+        id,
+        nome,
+        preco,
+        foto
+      ) {
+
+        const cart = getCart();
+
+        const item = cart.find(
+          produto =>
+            String(produto.id) ===
+            String(id)
+        );
+
+        if (item) {
+          item.qtd++;
+          item.nome = nome;
+          item.preco = Number(preco);
+          item.foto = foto || item.foto || '';
+        } else {
+          cart.push({
+            id: String(id),
+            nome,
+            preco: Number(preco),
+            foto: foto || '',
+            qtd: 1
+          });
+        }
+
+        saveCart(cart);
+
+        mostrarToast(
+          'Produto adicionado ao carrinho.'
+        );
+      };
+
+    async function carregarProduto() {
+
+      const target =
+        document.getElementById(
+          'product-detail'
+        );
+
+      const parametros =
+        new URLSearchParams(
+          window.location.search
+        );
+
+      const id =
+        parametros.get('id');
+
+      if (!id) {
+        target.innerHTML = `
+          <div class="notice">
+            <strong>
+              Produto não informado.
+            </strong>
+          </div>
+        `;
+        return;
+      }
+
+      try {
+
+        const {
+          data: produto,
+          error: produtoErro
+        } = await db
           .from('produtos')
-          .select('id,nome,preco,ano,categoria_id,descricao,disponivel')
+          .select(
+            'id,nome,preco,ano,categoria_id,descricao,disponivel'
+          )
           .eq('id', id)
           .eq('disponivel', true)
           .maybeSingle();
 
-        if (produtoRes.error) throw produtoRes.error;
-        if (!produtoRes.data) return null;
+        if (produtoErro) {
+          throw produtoErro;
+        }
 
-        var produto = produtoRes.data;
+        if (!produto) {
+          target.innerHTML = `
+            <div class="notice">
+              <strong>
+                Produto não encontrado ou indisponível.
+              </strong>
+              <p>
+                Volte ao catálogo para ver os produtos disponíveis.
+              </p>
+            </div>
+          `;
+          return;
+        }
 
-        var resultados = await Promise.all([
-          client
+        const [
+          imagensResultado,
+          categoriaResultado
+        ] = await Promise.all([
+
+          db
             .from('produto_imagens')
             .select('url,ordem')
             .eq('produto_id', id)
             .order('ordem'),
-          produto.categoria_id
-            ? client
-                .from('categorias')
-                .select('nome,slug')
-                .eq('id', produto.categoria_id)
-                .maybeSingle()
-            : Promise.resolve({ data: null, error: null })
+
+          db
+            .from('categorias')
+            .select('nome')
+            .eq(
+              'id',
+              produto.categoria_id
+            )
+            .maybeSingle()
+
         ]);
 
-        var imagensRes = resultados[0];
-        var categoriaRes = resultados[1];
-
-        if (imagensRes.error) throw imagensRes.error;
-        if (categoriaRes.error) throw categoriaRes.error;
-
-        return {
-          id: String(produto.id),
-          nome: produto.nome || '',
-          preco: produto.preco,
-          ano: produto.ano == null ? '' : String(produto.ano),
-          descricao: produto.descricao || '',
-          categoria: categoriaRes.data ? categoriaRes.data.nome : '',
-          categoria_slug: categoriaRes.data ? categoriaRes.data.slug : '',
-          fotos: (imagensRes.data || []).map(function (foto) {
-            return foto.url;
-          }).filter(Boolean)
-        };
-      }
-
-      async function render() {
-        var target = document.getElementById('product-detail');
-        if (!target) return;
-
-        var id = new URLSearchParams(window.location.search).get('id');
-
-        if (!id) {
-          target.innerHTML = '<div class="notice"><strong>Produto não informado.</strong><p>Volte ao catálogo e escolha um produto.</p></div>';
-          return;
+        if (imagensResultado.error) {
+          throw imagensResultado.error;
         }
 
-        try {
-          var produto = await obterProduto(id);
+        const fotos =
+          (imagensResultado.data || [])
+            .map(item => item.url)
+            .filter(Boolean);
 
-          if (!produto) {
-            target.innerHTML = '<div class="notice"><strong>Produto não encontrado ou indisponível.</strong><p>Volte ao catálogo para ver os produtos disponíveis.</p></div>';
-            return;
-          }
+        const categoria =
+          categoriaResultado.data
+            ? categoriaResultado.data.nome
+            : '';
 
-          document.title = produto.nome + ' — GB Numismática';
+        const fotoPrincipal =
+          fotos[0] || '';
 
-          var fotos = produto.fotos || [];
-          var principal = fotos[0] || '';
-          var descricao = produto.descricao || 'Produto destinado a colecionadores de numismática. As imagens apresentadas correspondem ao item cadastrado.';
+        const descricao =
+          produto.descricao ||
+          'Produto destinado a colecionadores de numismática. As imagens apresentadas correspondem ao item cadastrado.';
 
-          var galeria = principal
-            ? '<img id="main" class="gallery-main" src="' + esc(principal) + '" alt="' + esc(produto.nome) + '">' +
-              '<div class="thumbs">' + fotos.map(function (foto, index) {
-                return '<button type="button" class="' + (index === 0 ? 'active' : '') + '" data-photo="' + esc(foto) + '">' +
-                  '<img src="' + esc(foto) + '" alt="Foto ' + (index + 1) + '">' +
-                '</button>';
-              }).join('') + '</div>'
-            : '<div class="gallery-main no-photo">Sem foto</div>';
+        document.title =
+          produto.nome +
+          ' — GB Numismática';
 
-          target.innerHTML =
-            '<div class="product">' +
-              '<div>' + galeria + '</div>' +
-              '<div>' +
-                '<h1>' + esc(produto.nome) + '</h1>' +
-                '<div class="label">' + (produto.categoria ? 'Categoria: ' + esc(produto.categoria) : 'GB Numismática & Coleções') + '</div>' +
-                '<div class="price-big">' + money(produto.preco) + '</div>' +
-                '<div class="product-actions"><button class="add-cart" id="addCurrentProduct">🛒 Adicionar ao carrinho</button></div>' +
-                '<div class="desc"><h2>Descrição do Produto</h2><p>' + esc(descricao) + '</p></div>' +
-                '<div class="info">' +
-                  '<div><span class="label">Ano:</span> ' + esc(produto.ano || 'Não informado') + '</div>' +
-                  '<div><span class="label">Categoria:</span> ' + esc(produto.categoria || 'Não informada') + '</div>' +
-                  '<div><span class="label">Código:</span> GB-' + esc(produto.id) + '</div>' +
-                '</div>' +
-              '</div>' +
-            '</div>';
+        let galeria = `
+          <div class="gallery-main no-photo">
+            Sem foto
+          </div>
+        `;
 
-          document.querySelectorAll('.thumbs button').forEach(function (button) {
-            button.addEventListener('click', function () {
-              window.setPhoto(button, button.getAttribute('data-photo'));
-            });
-          });
+        if (fotoPrincipal) {
 
-          var addButton = document.getElementById('addCurrentProduct');
-          if (addButton) {
-            addButton.addEventListener('click', function () {
-              if (typeof window.addToCart === 'function') {
-                window.addToCart(String(produto.id));
+          const miniaturas =
+            fotos.map(
+              (foto, indice) => `
+                <button
+                  type="button"
+                  class="${indice === 0 ? 'active' : ''}"
+                  onclick="trocarFoto(this, '${escapar(foto)}')"
+                >
+                  <img
+                    src="${escapar(foto)}"
+                    alt="Foto ${indice + 1}"
+                  >
+                </button>
+              `
+            ).join('');
+
+          galeria = `
+            <img
+              id="foto-principal"
+              class="gallery-main"
+              src="${escapar(fotoPrincipal)}"
+              alt="${escapar(produto.nome)}"
+            >
+
+            <div class="thumbs">
+              ${miniaturas}
+            </div>
+          `;
+        }
+
+        target.innerHTML = `
+          <div class="product">
+
+            <div>
+              ${galeria}
+            </div>
+
+            <div>
+
+              <h1>
+                ${escapar(produto.nome)}
+              </h1>
+
+              <div class="label">
+                ${
+                  categoria
+                    ? 'Categoria: ' +
+                      escapar(categoria)
+                    : 'GB Numismática & Coleções'
+                }
+              </div>
+
+              <div class="price-big">
+                ${dinheiro(produto.preco)}
+              </div>
+
+              <div class="product-actions">
+
+                <button
+                  class="add-cart"
+                  type="button"
+                  onclick='adicionarProdutoAoCarrinho(
+                    ${JSON.stringify(String(produto.id))},
+                    ${JSON.stringify(produto.nome)},
+                    ${Number(produto.preco)},
+                    ${JSON.stringify(fotoPrincipal)}
+                  )'
+                >
+                  🛒 Adicionar ao carrinho
+                </button>
+
+              </div>
+
+              <div class="desc">
+
+                <h2>
+                  Descrição do Produto
+                </h2>
+
+                <p>
+                  ${escapar(descricao)}
+                </p>
+
+              </div>
+
+              <div class="info">
+
+                <div>
+                  <span class="label">
+                    Ano:
+                  </span>
+
+                  ${
+                    escapar(
+                      produto.ano ||
+                      'Não informado'
+                    )
+                  }
+                </div>
+
+                <div>
+                  <span class="label">
+                    Categoria:
+                  </span>
+
+                  ${
+                    escapar(
+                      categoria ||
+                      'Não informada'
+                    )
+                  }
+                </div>
+
+                <div>
+                  <span class="label">
+                    Código:
+                  </span>
+
+                  GB-${escapar(produto.id)}
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+        `;
+
+      } catch (erro) {
+
+        console.error(erro);
+
+        target.innerHTML = `
+          <div class="notice">
+
+            <strong>
+              Não foi possível carregar o produto.
+            </strong>
+
+            <p>
+              ${
+                escapar(
+                  erro.message ||
+                  'Tente novamente.'
+                )
               }
-            });
-          }
-        } catch (error) {
-          console.error('Erro ao carregar produto:', error);
-          target.innerHTML = '<div class="notice"><strong>Não foi possível carregar o produto.</strong><p>' + esc(error && error.message ? error.message : 'Tente novamente.') + '</p></div>';
-        }
-      }
+            </p>
 
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', render);
-      } else {
-        render();
+          </div>
+        `;
       }
-    })();
+    }
+
+    atualizarContadorCarrinho();
+
+    carregarProduto();
   </script>
+
+  <script src="js/busca.js"></script>
+
 </body>
 </html>
